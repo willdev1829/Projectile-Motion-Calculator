@@ -193,8 +193,151 @@ def calculatetotaltime(): #define function to calculate total time taken for mot
     print(totaltime) #prints value of total time taken to user.
     return totaltime #returns value of total time taken to main code.
 
+def calculatefinalvelocity(): #define function to calculate final velocity    
+    global horizontalinitialvelocity #ensures all variables with command have same value both inside and outside of this function
+    global horizontalfinalvelocity
+    global horizontaldisplacement
+    global horizontalacceleration
+    global totaltime
+    global verticalinitialvelocity
+    global verticalfinalvelocity
+    global verticaldisplacement
+    global verticalacceleration
 
-#ask user what value they want to calculate
+    if Horizontalcounter < 3 and Verticalcounter < 3: #if less than 3 values of horizontal and vertical motion given, impossible to calculate final velocity
+        print("Not enough information provided")
+        exit()
+    Hasangle = str(input("Do you have the landing angle?: ")) #check where user has landing angle
+    Hasangle = Hasangle.lower()
+    if Hasangle == 'yes':
+        landingangle = float(input("Enter value of the landing angle: "))
+        landingangle = math.radians(landingangle) #converts angle from degrees to radians for use in trigonometry calculations
+        velocitytype = 'singular' #calculator will use trigonometry to calculate final velocity
+    else:
+        velocitytype = 'both' #calculator will use pythagoras theorem to calculate final velocity
+    if velocitytype == 'singular': #code for calculating initial horizontal OR vertical velocity.
+        if Horizontalcounter > 2:
+            if Hastotaltime != 'yes': #no time value, so uses suvat equation which doesn't involve time.
+                horizontalfinalvelocity = ((horizontalinitialvelocity ** 2) + (2 * horizontalacceleration * horizontaldisplacement)) ** 0.5
+                finalvelocity = horizontalfinalvelocity / math.cos(landingangle)
+            elif Hashorizontaldisplacement != 'yes': #no horizontal displacement value, so uses suvat equation which doesn't involve horizontal displacement.
+                horizontalfinalvelocity = (horizontalinitialvelocity + (horizontalacceleration * totaltime))
+                finalvelocity = horizontalfinalvelocity / math.cos(landingangle)
+            elif Hashorizontalinitialvelocity != 'yes': #no horizontal final velocity value, so uses suvat equation which doesn't involve horizontal initial velocity.
+                horizontalfinalvelocity = (horizontaldisplacement - (0.5 * horizontalacceleration * (totaltime ** 2))) / totaltime
+                finalvelocity = horizontalfinalvelocity / math.cos(landingangle)
+            else: #must not have horizontal acceleration value, so uses suvat equation not involving horizontal acceleration.
+                horizontalfinalvelocity = (2 * horizontaldisplacement / totaltime) - horizontalinitialvelocity
+                finalvelocity = horizontalfinalvelocity / math.cos(landingangle)
+        elif Verticalcounter > 2: #code uses same logic as above, but repeated for vertical motion.
+            if Hastotaltime != 'yes':#no time value, so uses suvat equation which doesn't involve time.
+                verticalfinalvelocity = ((verticalinitialvelocity ** 2) + (2 * verticalacceleration * verticaldisplacement)) ** 0.5
+                finalvelocity = verticalfinalvelocity / math.sin(landingangle)
+            elif Hasverticaldisplacement != 'yes': #no vertical displacement value, so uses suvat equation which doesn't involve vertical displacement.
+                verticalfinalvelocity = (verticalinitialvelocity + (verticalacceleration * totaltime))
+                finalvelocity = verticalfinalvelocity / math.sin(landingangle)
+            elif Hasverticalinitialvelocity != 'yes':#no vertical initial velocity value, so uses suvat equation which doesn't involve vertical initial velocity.
+                verticalfinalvelocity = (verticaldisplacement - (0.5 * verticalacceleration * (totaltime ** 2))) / totaltime
+                finalvelocity = verticalfinalvelocity / math.sin(landingangle)
+            else:#must not have vertical acceleration value, so uses suvat equation not involving vertical acceleration.
+                verticalfinalvelocity = (2 * verticaldisplacement / totaltime) - verticalinitialvelocity
+                finalvelocity = verticalfinalvelocity / math.sin(landingangle)
+    else: #this is if no landing provided, so both final horizontal and vertical velocities must be calculated for pythagoras theorem.
+        if Horizontalcounter <= 1 and Verticalcounter <= 1: #if less than 2 values of horizontal or vertical motion for both provided, impossible to calculate final velocity.
+             print("Not enough information provided")
+             exit()
+        if (Horizontalcounter == Verticalcounter and Horizontalcounter > 2) or (Horizontalcounter > 3 and Verticalcounter > 3):#code if both horizontal and vertical values are the same and above 2, or if both values are above 3.
+            if Hastotaltime != 'yes': #suvat equation with no time value.
+                horizontalfinalvelocity = ((horizontalinitialvelocity ** 2) + (2 * horizontalacceleration * horizontaldisplacement)) ** 0.5
+                verticalfinalvelocity = ((verticalinitialvelocity ** 2) + (2 * verticalacceleration * verticaldisplacement)) ** 0.5
+            elif Hashorizontaldisplacement != 'yes': #suvat calculation with no horizontal displacement value.
+                horizontalfinalvelocity = (horizontalinitialvelocity + (horizontalacceleration * totaltime))
+            elif Hashorizontalinitialvelocity != 'yes': #suvat calculation with no horizontal initial velocity value.
+                horizontalfinalvelocity = (horizontaldisplacement - (0.5 * horizontalacceleration * (totaltime ** 2))) / totaltime
+            else: #suvat equation with no horizontal acceleration value.
+                horizontalfinalvelocity = (2 * horizontaldisplacement / totaltime) - horizontalinitialvelocity
+            if Hasverticaldisplacement != 'yes': #suvat equation with no vertical displacement value.
+                verticalfinalvelocity = (verticalinitialvelocity + (verticalacceleration * totaltime))
+            elif Hasverticalinitialvelocity != 'yes': #suvat equation with no vertical initial velocity value.
+                verticalfinalvelocity = (verticaldisplacement - (0.5 * verticalacceleration * (totaltime ** 2))) / totaltime
+            else: #suvat equation with no vertical acceleration value.
+                verticalfinalvelocity = (2 * verticaldisplacement / totaltime) - verticalinitialvelocity
+            finalvelocity = (horizontalfinalvelocity ** 2 + verticalfinalvelocity ** 2) ** 0.5 #pythagoras theorem to calculate final velocity.
+        elif Horizontalcounter == 3 and Verticalcounter == 2: #requires calculation of horizontal final velocity and time, and then uses time to calculate vertical final velocity.
+            if Hastotaltime != 'yes':
+                horizontalfinalvelocity = ((horizontalinitialvelocity ** 2) + (2 * horizontalacceleration * horizontaldisplacement)) ** 0.5 #suvat to find horizontal final velocity
+                totaltime = (horizontalfinalvelocity - horizontalinitialvelocity) / horizontalacceleration #suvat equation using horizontal values to find time.
+                if Hasverticaldisplacement != 'yes': #suvat equation to find vertical final velocity with no vertical displacement.
+                     verticalfinalvelocity = (verticalinitialvelocity + (verticalacceleration * totaltime))
+                elif Hasverticalinitialvelocity != 'yes':#suvat equation to find vertical final velocity with no vertical initial velocity.
+                     verticalfinalvelocity = (verticaldisplacement + (0.5 * verticalacceleration * (totaltime ** 2))) / totaltime
+                else: #suvat equation to find vertical final velocity with no vertical acceleration.
+                     verticalfinalvelocity = (2 * verticaldisplacement / totaltime) + verticalfinalvelocity
+                finalvelocity = (horizontalfinalvelocity ** 2 + verticalfinalvelocity ** 2) ** 0.5 #calculating final velocity using pythagoras theorem.
+            else: #if only 2 values for either horizontal or vertical motion provided, with one of them already being time, it is impossible to then find final vertical AND final velocity.
+                print("Not enough information provided")
+                exit()
+        elif Horizontalcounter == 2 and Verticalcounter == 3: #requires calculation of vertical final velocity and time, and then uses time to calculate horizontal final velocity.
+            if Hastotaltime != 'yes':
+                verticalfinalvelocity = ((verticalinitialvelocity ** 2) + (2 * verticalacceleration * verticaldisplacement)) ** 0.5 #suvat to find vertical final velocity
+                totaltime = (verticalinitialvelocity + verticalfinalvelocity) / verticalacceleration #suvat equation using verticalvalues to find time.
+                if Hashorizontaldisplacement != 'yes': #suvat equation to find horizontal final velocity with no horizontal displacement.
+                     horizontalfinalvelocity = (horizontalinitialvelocity + (horizontalacceleration * totaltime))
+                elif Hashorizontalfinalvelocity != 'yes': #suvat equation to find horizontal final velocity with no horizontal initial velocity.
+                     horizontalfinalvelocity = (horizontaldisplacement + (0.5 * horizontalacceleration * (totaltime ** 2))) / totaltime
+                else: #suvat equation to find horizontal final velocity with no horizontal acceleration.
+                     horizontalfinalvelocity = (2 * horizontaldisplacement / totaltime) + horizontalinitialvelocity
+                finalvelocity = (horizontalfinalvelocity ** 2 + verticalfinalvelocity ** 2) ** 0.5 #calculating final velocity using pythagoras theorem.
+            else: #if only 2 values for either horizontal or vertical motion provided, with one of them already being time, it is impossible to then find initial vertical AND horizontal velocity.
+                print("Not enough information provided") #any other combination of horizontal and vertical values mean it is impossible to calculate initial velocity.
+                exit()
+        else:
+            print("Not enough information provided")
+            exit()
+    print(finalvelocity) #prints value of final velocity to user.
+    return finalvelocity #returns value of final velocity to main code.
+    
+
+
+
+
+
+
+def calculatetotaldistancetravelled(): #define function to calculate total distance travelled
+    #first, we need to find the vertical displacement when the object is at it's tallest height.
+    if Verticalcounter < 3: #if less than 3 values of vertical motion given, impossible to calculate time taken for object to reach tallest height
+        print("Not enough information provided")
+        exit()
+    else:
+        firstverticaldisplacement = (((verticalfinalvelocity ** 2)-(verticalinitialvelocity ** 2)) / (2 * verticalacceleration))
+    #Second, we need to find the time taken for the object to reach this point, in order to calculate the horizontal displacement at this point
+    timetaken = ((firstverticaldisplacement * 2) / (verticalinitialvelocity))
+    #thirdly, use this time to calculate the horizontal displacement when the object is at it's tallest point
+    firsthorizontaldisplacement = (horizontalinitialvelocity * timetaken) + (0.5 * horizontalacceleration * (timetaken ** 2))
+    #fourthly, use the calculated information to determined the total distance for the first part of the object's journey
+    firstdistance = ((firsthorizontaldisplacement **2) + (firstverticaldisplacement **2)) ** 0.5
+    #now, as the object is at it's tallest point, it's new initial velocity = 0
+    newverticalinitialvelocity = 0
+    #calculate the objects vertical displacement for the second half of it's journey
+    if Hasverticalfinalvelocity != 'yes':
+        secondverticaldisplacement = (0.5 * verticalacceleration * ((totaltime - timetaken) ** 2))
+    elif Hasverticalacceleration != 'yes':
+        secondverticaldisplacement = (0.5 * verticalfinalvelocity * (totaltime - timetaken))
+    elif Hastotaltime != 'yes':
+        secondverticaldisplacement = ((verticalfinalvelocity ** 2)/ (2 * verticalacceleration))
+
+                
+
+
+
+
+
+
+
+
+
+
+
 
 Variabletocalculate = str(input("What value would you like to calculate?"))
 Variabletocalculate = Variabletocalculate.lower() #convert input to lowercase so easy to compare
@@ -202,8 +345,8 @@ Variabletocalculate = Variabletocalculate.lower() #convert input to lowercase so
 #check which value the user inputted 
 if Variabletocalculate == "initial velocity":
     initialvelocity = calculateinitialvelocity()
-#elif Variabletocalculate == "final velocity":
-    
+elif Variabletocalculate == "final velocity":
+    finalvelocity = calculatefinalvelocity()
 elif Variabletocalculate == "time taken":
     totaltime = calculatetotaltime()
 #if Variabletocalculate == "total distance travelled":
